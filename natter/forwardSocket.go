@@ -112,27 +112,21 @@ func (fs *ForwardSocket) KeepAlive() {
 	dialer := &net.Dialer{
 		LocalAddr: fs.LAddr,
 	}
-	timer := time.NewTimer(5 * time.Second)
-
-	for fs.active {
-		logger.Debug("keepAlive")
-		<-timer.C
-		conn, err := dialer.Dial("tcp4", keepLiveSrv)
-		logger.Debug("keepAlive")
-		if err != nil {
-			logger.Error(fmt.Sprintf("保活请求失败: %s\n", err.Error()))
-			continue
-		}
-		// 设置超时时间 3s
-		_ = conn.SetReadDeadline(time.Now().Add(3 * time.Second))
-		_, _ = conn.Write([]byte("HEAD /natter-keep-alive HTTP/1.1\r\n" +
-			"Host: www.baidu.com\r\n" +
-			"User-Agent: curl/8.0.0 (Natter)\r\n" +
-			"Accept: */*\r\n" +
-			"Connection: keep-alive\r\n" +
-			"\r\n"))
-		_, _ = io.ReadAll(conn)
-		_ = conn.Close()
-		timer.Reset(5 * time.Second)
+	logger.Debug("keepAlive")
+	conn, err := dialer.Dial("tcp4", keepLiveSrv)
+	logger.Debug("keepAlive")
+	if err != nil {
+		logger.Error(fmt.Sprintf("保活请求失败: %s\n", err.Error()))
+		return
 	}
+	// 设置超时时间 3s
+	_ = conn.SetReadDeadline(time.Now().Add(3 * time.Second))
+	_, _ = conn.Write([]byte("HEAD /natter-keep-alive HTTP/1.1\r\n" +
+		"Host: www.baidu.com\r\n" +
+		"User-Agent: curl/8.0.0 (Natter)\r\n" +
+		"Accept: */*\r\n" +
+		"Connection: keep-alive\r\n" +
+		"\r\n"))
+	_, _ = io.ReadAll(conn)
+	_ = conn.Close()
 }

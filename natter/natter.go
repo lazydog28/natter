@@ -26,8 +26,8 @@ func Start(ctx context.Context, forwardAddr *net.TCPAddr) (err error) {
 		return
 	}
 	logger.Info(fmt.Sprintf("公网访问地址: %s", rAddr.String()))
-	go forward.KeepAlive()
 	go func() {
+		logger.Info("开始保持 Natter 活跃")
 		for {
 			timer := time.NewTimer(5 * time.Second)
 			<-timer.C
@@ -37,14 +37,15 @@ func Start(ctx context.Context, forwardAddr *net.TCPAddr) (err error) {
 				forward.StopForward()
 				return
 			default:
+				forward.KeepAlive()
 				if !TestPort(rAddr.Port) {
 					logger.Error("公网端口不可达")
 					forward.StopForward()
 					err = Start(ctx, forwardAddr)
 					if err != nil {
 						logger.Error(fmt.Sprintf("重新获取 STUN 映射失败: %s\n", err.Error()))
-						return
 					}
+					return
 				}
 			}
 			timer.Reset(5 * time.Second)
