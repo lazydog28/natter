@@ -38,7 +38,7 @@ func Start(ctx context.Context, forwardAddr *net.TCPAddr) (err error) {
 				return
 			default:
 				forward.KeepAlive()
-				if !TestPort(rAddr.Port) {
+				if !TestPort(rAddr) {
 					logger.Error("公网端口不可达")
 					forward.StopForward()
 					err = Start(ctx, forwardAddr)

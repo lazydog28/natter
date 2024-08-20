@@ -81,12 +81,24 @@ func testTransmission(port int) bool {
 	return bodyStr == "1"
 }
 
-func TestPort(port int) bool {
+func localTestAddr(rAddr *net.TCPAddr) bool {
+	conn, err := net.DialTimeout("tcp4", rAddr.String(), time.Second*3)
+	if err != nil {
+		return false
+	}
+	c(conn)
+	return true
+}
+
+func TestPort(rAddr *net.TCPAddr) bool {
 	for i := 0; i < 3; i++ {
-		if testIfConfigCo(port) {
+		if testIfConfigCo(rAddr.Port) {
 			return true
 		}
-		if testTransmission(port) {
+		if testTransmission(rAddr.Port) {
+			return true
+		}
+		if localTestAddr(rAddr) {
 			return true
 		}
 		time.Sleep(1 * time.Second)
