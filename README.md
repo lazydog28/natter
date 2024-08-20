@@ -2,6 +2,9 @@
 > 软件实现了一个简陋的STUN内网穿透服务，能够在NAT1网络下将内网主机端口映射到公网端口上，实现内网穿透。
 > 
 > 因为我的需求只是将内网的网站暴露到公网，使用的TCP协议，所以软件只支持TCP协议，不支持UDP协议。
+> 
+> 该仓库是仓库[MikeWang000000/Natter](https://github.com/MikeWang000000/Natter)的简化版本，只保留了TCP协议的支持。
+> 如果有更加复杂的需求，可以使用原项目。
 
 
 > [NAT网络类型检测](https://github.com/HMBSbige/NatTypeTester)
@@ -39,3 +42,5 @@
 ![ad4df11ccc245df617632ed8de6cb1e1.png](https://imagesbed28.caiyun.fun/ad4df11ccc245df617632ed8de6cb1e1.png)
 
 暴露的端口是随机的，你现在可以通过访问输出的公网访问地址来访问你的内网服务。
+
+
