@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"strings"
+	"time"
 )
 
 // dialIPv4Context 是一个自定义的 DialContext 函数，用于指定 IPv4 地址
@@ -81,5 +82,14 @@ func testTransmission(port int) bool {
 }
 
 func TestPort(port int) bool {
-	return testIfConfigCo(port) || testTransmission(port)
+	for i := 0; i < 3; i++ {
+		if testIfConfigCo(port) {
+			return true
+		}
+		if testTransmission(port) {
+			return true
+		}
+		time.Sleep(1 * time.Second)
+	}
+	return false
 }
