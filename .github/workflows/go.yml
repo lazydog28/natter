@@ -44,7 +44,7 @@ jobs:
                 with:
                     name: ${{ github.event.inputs.VERSION }}
                     body: ${{ github.event.inputs.VERSION }}
-                    draft: true
+#                    draft: true
                     fail_on_unmatched_files: true
                     files: |
                         ./dist/*
