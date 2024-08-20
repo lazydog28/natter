@@ -1,0 +1,50 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: Go
+
+on:
+    workflow_dispatch:
+        inputs:
+            VERSION:
+                description: '请输入版本号'
+                required: true
+permissions:
+    contents: write
+jobs:
+    build:
+        strategy:
+            matrix:
+                goos: [ linux, darwin, windows ]
+                goarch: [ amd64 ]
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v4
+
+            -   name: Set up Go
+                uses: actions/setup-go@v4
+                with:
+                    go-version: '1.20'
+
+            -   name: Build
+                # 编译文件 文件名称为 dist/${{ matrix.goos }}_${{ matrix.goarch }}_
+                run: |
+                    if [[ ${{ matrix.goos }} == "windows" ]]; then
+                        go build -v -ldflags "-s -w" -trimpath -a -o dist/natter_${{ matrix.goos }}_${{ matrix.goarch }}.exe
+                    else
+                        go build -v -ldflags "-s -w" -trimpath -a -o dist/natter_${{ matrix.goos }}_${{ matrix.goarch }}
+                    fi
+                env:
+                    GOOS: ${{ matrix.goos }}
+                    GOARCH: ${{ matrix.goarch }}
+                    CGO_ENABLED: 0
+
+            -   name: Release
+                uses: softprops/action-gh-release@v2
+                with:
+                    name: ${{ github.event.inputs.VERSION }}
+                    body: ${{ github.event.inputs.VERSION }}
+                    draft: true
+                    fail_on_unmatched_files: true
+                    files: |
+                        ./dist/*
